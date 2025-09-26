@@ -282,83 +282,36 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                 shortcut.WorkingDirectory = setup_src_path
                 shortcut.WindowStyle = 0  # 0 = Caché
                 
-                # Chemin de l'icône depuis le répertoire du script d'installation (plus fiable)
+                # Chemin de l'icône directement dans le répertoire du script d'installation
                 script_dir = os.path.dirname(os.path.abspath(__file__))
-                icon_source_path = os.path.join(script_dir, 'src', 'telegram_manager', 'resources', 'icons', 'app_icon.ico')
-                icon_png_source_path = os.path.join(script_dir, 'src', 'telegram_manager', 'resources', 'icons', 'app_icon.png')
-                
-                # Fallback vers l'icône dans le répertoire d'installation si elle existe déjà
-                icon_install_path = os.path.join(target_dir, 'setup', 'src', 'telegram_manager', 'resources', 'icons', 'app_icon.ico')
-                icon_png_install_path = os.path.join(target_dir, 'setup', 'src', 'telegram_manager', 'resources', 'icons', 'app_icon.png')
-                
-                # Déterminer quelle icône utiliser (priorité: script_dir > target_dir)
+                icon_source_path = os.path.join(script_dir, 'app_icon.ico')
+                icon_png_source_path = os.path.join(script_dir, 'app_icon.png')
+
+                # Déterminer quelle icône utiliser
                 if os.path.exists(icon_source_path):
                     icon_path = icon_source_path
                     print(f"[INFO] Utilisation de l'icône depuis le script: {icon_path}")
-                elif os.path.exists(icon_install_path):
-                    icon_path = icon_install_path
-                    print(f"[INFO] Utilisation de l'icône depuis l'installation: {icon_path}")
                 elif os.path.exists(icon_png_source_path):
                     icon_path = icon_png_source_path
                     print(f"[INFO] Utilisation de l'icône PNG depuis le script: {icon_path}")
-                elif os.path.exists(icon_png_install_path):
-                    icon_path = icon_png_install_path
-                    print(f"[INFO] Utilisation de l'icône PNG depuis l'installation: {icon_path}")
                 else:
                     icon_path = None
-                    print("[WARNING] Aucune icône trouvée")
-                
-                # Copier l'icône dans le répertoire d'installation pour que le raccourci ait sa propre copie
+                    print("[WARNING] Aucune icône trouvée dans le répertoire du script")
+                # Utiliser directement l'icône sans la copier
                 if icon_path:
-                    icons_dir = os.path.join(target_dir, 'icons')
-                    os.makedirs(icons_dir, exist_ok=True)
-                    local_icon_path = os.path.join(icons_dir, 'app_icon.ico')
-                    
-                    # Copier l'icône seulement si elle n'existe pas déjà ou si elle est différente
-                    if not os.path.exists(local_icon_path) or os.path.getmtime(icon_path) > os.path.getmtime(local_icon_path):
-                        shutil.copy2(icon_path, local_icon_path)
-                        print(f"[INFO] Icône copiée vers: {local_icon_path}")
-                
-                if icon_path and os.path.exists(local_icon_path):
                     try:
                         from PyQt6.QtWidgets import QApplication, QMainWindow
                         from PyQt6.QtGui import QIcon
                         
-                        # Vérifier si l'icône copiée est valide avec QMainWindow
-                        app = QApplication.instance() or QApplication([])
-                        window = QMainWindow()
-                        window.setWindowIcon(QIcon(local_icon_path))
-                        
-                        # Vérifier si l'icône est vraiment valide (pas juste non-null)
-                        if not window.windowIcon().isNull():
-                            shortcut.IconLocation = f"{os.path.abspath(local_icon_path)},0"
-                            print(f"[INFO] Icône locale utilisée avec succès pour {name}: {local_icon_path}")
-                        else:
-                            raise Exception("Icône NULL malgré le chargement")
-                        
-                        # Nettoyer
-                        window.close()
-                        if QApplication.instance() is None:
-                            app.quit()
-                            
-                    except Exception as e:
-                        print(f"[WARNING] Impossible de charger l'icône locale avec QMainWindow: {e}")
-                        # Fallback vers l'icône système
-                        shortcut.IconLocation = sys.executable
-                elif icon_path:
-                    try:
-                        from PyQt6.QtWidgets import QApplication, QMainWindow
-                        from PyQt6.QtGui import QIcon
-                        
-                        # Vérifier si l'icône originale est valide avec QMainWindow
+                        # Vérifier si l'icône est valide avec QMainWindow
                         app = QApplication.instance() or QApplication([])
                         window = QMainWindow()
                         window.setWindowIcon(QIcon(icon_path))
                         
-                        # Vérifier si l'icône est vraiment valide
+                        # Vérifier si l'icône est vraiment valide (pas juste non-null)
                         if not window.windowIcon().isNull():
                             shortcut.IconLocation = f"{os.path.abspath(icon_path)},0"
-                            print(f"[INFO] Icône originale utilisée pour {name} (copie échouée)")
+                            print(f"[INFO] Icône utilisée directement pour {name}: {icon_path}")
                         else:
                             raise Exception("Icône NULL malgré le chargement")
                         
@@ -368,7 +321,7 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                             app.quit()
                             
                     except Exception as e:
-                        print(f"[WARNING] Impossible de charger l'icône originale avec QMainWindow: {e}")
+                        print(f"[WARNING] Impossible de charger l'icône avec QMainWindow: {e}")
                         # Fallback vers l'icône système
                         shortcut.IconLocation = sys.executable
                 else:
