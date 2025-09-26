@@ -24,7 +24,7 @@ build/
 venv/
 env/
 .venv/
-.env
+#.env
 
 # Fichiers de session
 *.session
