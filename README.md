@@ -1,30 +1,29 @@
-# Telegram Manager
+# Gestionnaire de Telegram
 
-- Telegram Manager est une application complète de gestion d'identifiants de groupes, canaux, chats et bots Telegram avec une interface utilisateur intuitive. Parmis ses outils de gestion est inclu "Members Manager".
-- **Members Manager**: Programme de gestion des membres Telegram gamifié pour l'ajout des membres respectant les normes, limitations et autorisations Telegram. 
-⚠ Important : Members Manager est un outil payant via clé licence renouvelable chaque fin de la mensualité. 
+- Gestionnaire de Telegram est une application complète pour gérer les identifiants de groupe, de canal, de chat et de bot Telegram avec une interface utilisateur intuitive. L'un de ses outils de gestion est "Members Manager".
+- **Members Manager**: Puissant outil de gestion des membres conçu pour ajouter des membres en respectant les normes, les limitations et les autorisations Telegram.
 
+⚠ Important: Members Manager est un outil payant via clé de licence renouvelable chaque mois à la fin de la période d'abonnement, pour utiliser Members Manager gratuitement, vous pouvez utiliser vos 14 jours d'essai gratuit.
 
-## Fonctionnalités principales
+## Caractéristiques clés
 
-- 🚀 Gestion complète d'identifiants de groupes, canaux, chats et bots Telegram,
-- 🎨 Interface utilisateur adaptée pour la gestion via connexion direct à Telegram,
+-🚀 Interface utilisateur intuitive pour gérer les identifiants de groupe, de canal, de chat et de bot Telegram,
+- 🎨 Interface utilisateur personnalisable pour gérer via connexion directe à Telegram,
 - 👥 Gestion avancée des autorisations Telegram,
-- 📊 Tableau de bord analytique des identifiants d'utilisateurs,
-- 📤 Exportation des données pour la gestion des membres via "Members Manager",
-- 🔒 Chiffrement des données sensibles,
+- 📊 Tableau de bord analytique des identifiants d'utilisateurs, de groupes, de canaux et de chats (ID ou liens),
+- 📤 Imports et exports des données pour la gestion des membres via l'outil "Members Manager",
+- 🔒 Chiffrement des données sécurisé,
 - 🔄 Synchronisation en temps réel
 
-## 🚀 Installation rapide (Windows)
+## Installation rapide (Windows)
 
-1. **Téléchargez** la dernière version de l'application
-2. **Exécutez** `install.bat` ou le fichier `install` en tant qu'administrateur
-3. Un lanceur(Lanceur Python(TM)) sera créé sur votre bureau
-4. Double-cliquez sur le lanceur pour lancer l'application
+1. **Télécharger** la dernière version de l'application
+2. **Exécuter** `install` ou le fichier `install.bat` en tant qu'administrateur
+3. Après l'installation, un raccourci (Telegram Manager) sera créé sur votre bureau
+4. Double-cliquez sur le raccourci pour lancer l'application
 
 ### Prérequis !
 
-- Compte Telegram avec numéro de téléphone connecté à Telegram
-- Récuperation des clés API Telegram liés au numéro de téléphone Telegram (à obtenir sur [my.telegram.org](https://my.telegram.org/))
-- Lire le paramètre "Aide" de l'appplication pour en savoir plus de la configuration de l'application avec les clés API Telegram.
-⚠ Important : Une fois les clés API recupérées, remplacez les clés API sur le paramètre de configuration de l'application, car celui-ci contient des clés API par défaut(pouvant ralentir la connexion ou le fonctionnement de l'application en raison des limitations d'appellation des clés API Telegram).
+- 📱 Compte Telegram avec numéro de téléphone connecté
+- 🤳 Récupérer les clés API liées au numéro de téléphone Telegram (disponibles sur [my.telegram.org](https://my.telegram.org/))
+- 📚 Lire le paramètre d'aide de l'application pour plus d'informations sur la configuration de l'application avec les clés API.

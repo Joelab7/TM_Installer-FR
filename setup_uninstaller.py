@@ -104,10 +104,10 @@ def get_desktop_shortcut():
     
     # Noms possibles du raccourci (avec et sans extension .lnk)
     possible_names = [
-        'Lanceur Python(TM)',
-        'Lanceur Python(TM).lnk',
-        'Python(TM)',
-        'Python(TM).lnk',
+        'Telegram Manager',
+        'Telegram Manager.lnk',
+        'Telegram Manager(French version)',
+        'Telegram Manager(French version).lnk',
     ]
     
     # Emplacements possibles du bureau

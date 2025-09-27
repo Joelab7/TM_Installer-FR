@@ -80,7 +80,7 @@ class InstallerApp:
         
         ttk.Checkbutton(
             options_frame, 
-            text="Créer un lanceur Python(TM) sur le bureau pour le lancement de l'application(recommandé)",
+            text="Créer un raccourci au bureau(recommandé)",
             variable=self.create_desktop_shortcut
         ).pack(anchor='w', pady=2)
         
@@ -282,23 +282,10 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                 shortcut.WorkingDirectory = setup_src_path
                 shortcut.WindowStyle = 0  # 0 = Caché
                 
-                # Chemin de l'icône directement dans le répertoire du script d'installation
-                script_dir = os.path.dirname(os.path.abspath(__file__))
-                icon_source_path = os.path.join(script_dir, 'app_icon.ico')
-                icon_png_source_path = os.path.join(script_dir, 'app_icon.png')
-
-                # Déterminer quelle icône utiliser
-                if os.path.exists(icon_source_path):
-                    icon_path = icon_source_path
-                    print(f"[INFO] Utilisation de l'icône depuis le script: {icon_path}")
-                elif os.path.exists(icon_png_source_path):
-                    icon_path = icon_png_source_path
-                    print(f"[INFO] Utilisation de l'icône PNG depuis le script: {icon_path}")
-                else:
-                    icon_path = None
-                    print("[WARNING] Aucune icône trouvée dans le répertoire du script")
-                # Utiliser directement l'icône sans la copier
-                if icon_path:
+                # Chemin de l'icône pour Telegram Manager
+                icon_path = os.path.join(target_dir, 'setup', 'src', 'telegram_manager', 'resources', 'icons', 'app_icon.ico')
+                
+                if os.path.exists(icon_path):
                     try:
                         from PyQt6.QtWidgets import QApplication, QMainWindow
                         from PyQt6.QtGui import QIcon
@@ -308,12 +295,9 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                         window = QMainWindow()
                         window.setWindowIcon(QIcon(icon_path))
                         
-                        # Vérifier si l'icône est vraiment valide (pas juste non-null)
-                        if not window.windowIcon().isNull():
-                            shortcut.IconLocation = f"{os.path.abspath(icon_path)},0"
-                            print(f"[INFO] Icône utilisée directement pour {name}: {icon_path}")
-                        else:
-                            raise Exception("Icône NULL malgré le chargement")
+                        # Si on arrive ici, l'icône est valide
+                        shortcut.IconLocation = f"{os.path.abspath(icon_path)},0"
+                        print(f"[INFO] Icône chargée avec succès pour {name}")
                         
                         # Nettoyer
                         window.close()
@@ -322,10 +306,10 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                             
                     except Exception as e:
                         print(f"[WARNING] Impossible de charger l'icône avec QMainWindow: {e}")
-                        # Fallback vers l'icône système
-                        shortcut.IconLocation = sys.executable
+                        # Fallback vers la méthode standard
+                        shortcut.IconLocation = f"{os.path.abspath(icon_path)},0"
                 else:
-                    print(f"[WARNING] Aucune icône trouvée pour {name}")
+                    print(f"[WARNING] Fichier d'icône introuvable: {icon_path}")
                     shortcut.IconLocation = sys.executable
                 
                 # Sauvegarder le raccourci
@@ -704,20 +688,20 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                                     # Créer le raccourci
                                     shortcut_created = self.create_shortcut(
                                         os.path.join(install_dir, 'launch.py'),
-                                        'Lanceur Python(TM)',
+                                        'Telegram Manager',
                                         public_desktop
                                     )
                                     
                                     if shortcut_created:
-                                        print("[DEBUG] Le lanceur Python(TM) a été créé sur le bureau")
-                                        success_msg += "\n- Le lanceur Python(TM) a été créé sur le bureau"
+                                        print("[DEBUG] Le raccourci a été créé sur le bureau")
+                                        success_msg += "\n- Le raccourci a été créé sur le bureau"
                                     else:
-                                        raise Exception("Échec de la création du raccourci(Lanceur Python(TM))")
+                                        raise Exception("Échec de la création du raccourci")
                                         
                                 except Exception as e:
-                                    error_msg = f"[ERREUR] Impossible de créer le raccourci(Lanceur Python(TM)) sur le bureau: {e}"
+                                    error_msg = f"[ERREUR] Impossible de créer le raccourci sur le bureau: {e}"
                                     print(error_msg)
-                                    success_msg += "\n- Impossible de créer le raccourci(Lanceur Python(TM)) sur le bureau"
+                                    success_msg += "\n- Impossible de créer le raccourci sur le bureau"
                             
                             # Le raccourci du menu Démarrer a été supprimé de cette version
                             
