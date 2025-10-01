@@ -28,8 +28,8 @@ class InstallerApp:
         # Style
         self.style = ttk.Style()
         self.style.theme_use('clam')
-        self.style.configure('TFrame', background='#f0f0f0')
-        self.style.configure('TLabel', background='#f0f0f0', font=('Segoe UI', 10))
+        self.style.configure('TFrame', background='#FFFFFF')
+        self.style.configure('TLabel', background='#FFFFFF', font=('Segoe UI', 10))
         self.style.configure('TButton', font=('Segoe UI', 10))
         
         # Variables
@@ -51,7 +51,7 @@ class InstallerApp:
         header = ttk.Label(
             main_frame, 
             text="Installation de Telegram Manager",
-            font=('Segoe UI', 16, 'bold')
+            font=('Segoe UI', 16, 'bold'),foreground='#4FC3F7'
         )
         header.pack(pady=(0, 20))
         
@@ -93,7 +93,7 @@ class InstallerApp:
         style.configure("Custom.Horizontal.TProgressbar",
             thickness=20,
             troughcolor='#f0f0f0',
-            background='#4CAF50',  # Couleur verte
+            background='#4FC3F7',  # Couleur bleu
             troughrelief='flat',
             borderwidth=1,
             lightcolor='#66BB6A',
@@ -120,7 +120,7 @@ class InstallerApp:
         self.status_label = ttk.Label(
             main_frame, 
             textvariable=self.status_var,
-            foreground='#666666',
+            foreground='#4FC3F7',
             font=('Segoe UI', 8)
         )
         self.status_label.pack(pady=(5, 0))
@@ -145,7 +145,7 @@ class InstallerApp:
         self.status_label.pack(pady=(5, 0))
         
         # Style pour le bouton d'installation
-        self.style.configure('Accent.TButton', font=('Segoe UI', 10, 'bold'))
+        self.style.configure('Accent.TButton', font=('Segoe UI', 10, 'bold'), background='#4FC3F7', foreground='#FFFFFF')
     
     def browse_directory(self):
         """Ouvre une boîte de dialogue pour sélectionner le dossier d'installation."""
