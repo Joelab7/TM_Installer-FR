@@ -175,7 +175,7 @@ class UninstallerApp:
         style.configure('TButton', font=('Segoe UI', 10))
         style.configure('TLabelFrame', background='#FFFFFF')
         style.configure('TLabelFrame.Label', background='#FFFFFF', foreground='#000000')
-        style.configure('Horizontal.TProgressbar', background='#4CAF50', troughcolor='#FFFFFF')
+        style.configure('Horizontal.TProgressbar', background='#4FC3F7', troughcolor='#FFFFFF')
         style.configure('Vertical.TScrollbar', background='#FFFFFF', troughcolor='#FFFFFF')
         style.configure('TScale', background='#FFFFFF')
         style.configure('TRadiobutton', background='#FFFFFF')
@@ -198,7 +198,7 @@ class UninstallerApp:
         style.configure("Custom.Horizontal.TProgressbar",
             thickness=20,
             troughcolor='#FFFFFF',  # Fond blanc pur
-            background='#4CAF50',
+            background='#4FC3F7',
             troughrelief='flat',
             borderwidth=0,  # Pas de bordure
             lightcolor='#66BB6A',
