@@ -175,7 +175,7 @@ class UninstallerApp:
         style.configure('TButton', font=('Segoe UI', 10))
         style.configure('TLabelFrame', background='#FFFFFF')
         style.configure('TLabelFrame.Label', background='#FFFFFF', foreground='#000000')
-        style.configure('Horizontal.TProgressbar', background='#4FC3F7', troughcolor='#FFFFFF')
+        style.configure('Horizontal.TProgressbar', background='#4FC3F7', troughcolor='#4FC3F7')
         style.configure('Vertical.TScrollbar', background='#FFFFFF', troughcolor='#FFFFFF')
         style.configure('TScale', background='#FFFFFF')
         style.configure('TRadiobutton', background='#FFFFFF')
@@ -339,13 +339,13 @@ class UninstallerApp:
             print(f"[DEBUG] Raccourci détecté: {self.desktop_shortcut}")
             self.shortcut_label.config(
                 text=f"Raccourci sur le bureau : {os.path.basename(self.desktop_shortcut)}",
-                foreground='green' if os.path.exists(self.desktop_shortcut) else 'red'
+                foreground='#4FC3F7'  # Bleu au lieu de vert/rouge
             )
         else:
             print("[DEBUG] Aucun raccourci trouvé sur le bureau")
             self.shortcut_label.config(
                 text="Raccourci sur le bureau : Non détecté (peut déjà être supprimé)",
-                foreground='orange'
+                foreground='#4FC3F7'  # Bleu au lieu d'orange
             )
         
         # Mettre à jour l'état du bouton de désinstallation
@@ -370,7 +370,7 @@ class UninstallerApp:
         if not self.install_dirs:
             self.dirs_label.config(
                 text="Aucun dossier d'installation trouvé (peut déjà être désinstallé)",
-                foreground='orange'
+                foreground='#4FC3F7'  # Bleu au lieu d'orange
             )
             return
         
@@ -401,7 +401,7 @@ class UninstallerApp:
                 dir_frame,
                 text=dir_path,
                 style='InstallDir.TLabel',
-                foreground='green' if os.path.exists(dir_path) else 'red'
+                foreground='#4FC3F7'  # Bleu au lieu de vert/rouge
             )
             label.pack(side=tk.LEFT, fill=tk.X, expand=True, anchor='w')
             
