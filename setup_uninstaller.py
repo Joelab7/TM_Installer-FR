@@ -168,58 +168,57 @@ class UninstallerApp:
         # Style
         style = ttk.Style()
         style.theme_use('clam')
-        style.configure('TFrame', background='#f0f0f0')
-        style.configure('TLabel', background='#f0f0f0', font=('Segoe UI', 10))
+
+        # Configuration complète pour fond blanc - tous les éléments
+        style.configure('TFrame', background='#FFFFFF')
+        style.configure('TLabel', background='#FFFFFF', font=('Segoe UI', 10))
         style.configure('TButton', font=('Segoe UI', 10))
-        style.configure('Title.TLabel', font=('Segoe UI', 14, 'bold'))
-        style.configure('Status.TLabel', font=('Segoe UI', 9))
-        style.configure('InstallDir.TLabel', font=('Segoe UI', 9), padding=(10, 2, 0, 2))
-        style.configure('InstallDir.TCheckbutton', font=('Segoe UI', 9))
+        style.configure('TLabelFrame', background='#FFFFFF')
+        style.configure('TLabelFrame.Label', background='#FFFFFF', foreground='#000000')
+        style.configure('Horizontal.TProgressbar', background='#4CAF50', troughcolor='#FFFFFF')
+        style.configure('Vertical.TScrollbar', background='#FFFFFF', troughcolor='#FFFFFF')
+        style.configure('TScale', background='#FFFFFF')
+        style.configure('TRadiobutton', background='#FFFFFF')
+        style.configure('TCheckbutton', background='#FFFFFF')
+        style.configure('TMenubutton', background='#FFFFFF')
+
+        # Configuration spécifique pour les widgets ttk
+        style.configure('TNotebook', background='#FFFFFF')
+        style.configure('TNotebook.Tab', background='#FFFFFF')
+
+        # Forcer le fond de la fenêtre principale
+        self.root.configure(bg='#FFFFFF')
+
+        style.configure('Title.TLabel', font=('Segoe UI', 14, 'bold'), background='#FFFFFF')
+        style.configure('Status.TLabel', font=('Segoe UI', 9), background='#FFFFFF')
+        style.configure('InstallDir.TLabel', font=('Segoe UI', 9), padding=(10, 2, 0, 2), background='#FFFFFF')
+        style.configure('InstallDir.TCheckbutton', font=('Segoe UI', 9), background='#FFFFFF')
         
         # Barre de progression
         style.configure("Custom.Horizontal.TProgressbar",
             thickness=20,
-            troughcolor='#f0f0f0',
+            troughcolor='#FFFFFF',  # Fond blanc pur
             background='#4CAF50',
             troughrelief='flat',
-            borderwidth=1,
+            borderwidth=0,  # Pas de bordure
             lightcolor='#66BB6A',
-            darkcolor='#388E3C',
-            bordercolor='#E0E0E0'
+            darkcolor='#388E3C'
         )
         
         # Frame principal
         main_frame = ttk.Frame(self.root, padding="20")
         main_frame.pack(fill=tk.BOTH, expand=True)
         
-        # En-tête
+        # En-tête avec couleur bleue
         ttk.Label(
             main_frame, 
             text="Désinstallation de Telegram Manager",
-            style='Title.TLabel'
+            style='Title.TLabel',
+            foreground='#4FC3F7'  # Bleu clair professionnel
         ).pack(pady=(0, 20))
         
-        # Contenu avec barre de défilement
-        canvas = tk.Canvas(main_frame, bg='#f0f0f0', highlightthickness=0)
-        scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
-        
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
-            )
-        )
-        
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        
-        # Pack le canvas et la scrollbar
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
-        
         # Section d'information
-        info_frame = ttk.LabelFrame(scrollable_frame, text="Composants à désinstaller", padding=10)
+        info_frame = ttk.LabelFrame(main_frame, text="Composants à désinstaller", padding=10)
         info_frame.pack(fill=tk.X, pady=10, padx=5)
         
         # Frame pour les dossiers d'installation avec une bordure et un fond
@@ -254,7 +253,7 @@ class UninstallerApp:
         self.shortcut_label.pack(anchor='w', pady=2)
         
         # Barre de progression
-        progress_frame = ttk.Frame(scrollable_frame)
+        progress_frame = ttk.Frame(main_frame)
         progress_frame.pack(fill=tk.X, pady=(20, 10))
         
         self.progress = ttk.Progressbar(
@@ -266,18 +265,19 @@ class UninstallerApp:
         )
         self.progress.pack(fill=tk.X, expand=True, pady=5)
         
-        # Statut
+        # Statut avec couleur bleue
         self.status_var = tk.StringVar(value="Prêt à désinstaller")
         status_label = ttk.Label(
-            scrollable_frame,
+            main_frame,
             textvariable=self.status_var,
             style='Status.TLabel',
-            wraplength=600
+            wraplength=600,
+            foreground='#4FC3F7'  # Bleu clair pour le texte de statut
         )
         status_label.pack(pady=(0, 20))
         
         # Boutons
-        btn_frame = ttk.Frame(scrollable_frame)
+        btn_frame = ttk.Frame(main_frame)
         btn_frame.pack(fill=tk.X)
         
         self.uninstall_btn = ttk.Button(
@@ -294,8 +294,24 @@ class UninstallerApp:
             command=self.root.quit
         ).pack(side=tk.RIGHT)
         
-        # Style pour le bouton d'installation
-        style.configure('Accent.TButton', font=('Segoe UI', 10, 'bold'))
+        # Style pour les boutons modernes bleus
+        style.configure('Accent.TButton',
+                           font=('Segoe UI', 10, 'bold'),
+                           background='#1976D2',  # Bleu moderne pour le bouton principal
+                           foreground='white')
+
+        style.map('Accent.TButton',
+                      background=[('active', '#2196F3'),  # Bleu plus clair au survol
+                                 ('pressed', '#0D47A1')], # Bleu foncé quand pressé
+                      relief=[('pressed', 'sunken'), ('!pressed', 'raised')])
+
+        style.configure('TButton',
+                           font=('Segoe UI', 10),
+                           background='#1976D2',  # Bleu moderne
+                           foreground='white')
+        style.map('TButton',
+                      background=[('active', '#42A5F5'),  # Bleu au survol
+                                 ('pressed', '#1E88E5')])  # Bleu plus foncé quand pressé
     
     def detect_components(self):
         """Détecte les composants à désinstaller"""
