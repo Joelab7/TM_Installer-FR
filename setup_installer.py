@@ -68,7 +68,7 @@ class InstallerApp:
         dir_entry_frame = ttk.Frame(dir_frame)
         dir_entry_frame.pack(fill=tk.X, pady=5)
         
-        self.dir_entry = ttk.Entry(dir_entry_frame, textvariable=self.install_dir, width=50)
+        self.dir_entry = ttk.Entry(dir_entry_frame, textvariable=self.install_dir, width=50, foreground='#4FC3F7')
         self.dir_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         
         browse_btn = ttk.Button(dir_entry_frame, text="Parcourir...", command=self.browse_directory)
@@ -168,16 +168,20 @@ class InstallerApp:
                 self.install_dir.set(directory)
                 
                 # Mettre à jour le statut pour confirmer la sélection
-                self.update_status(f"Dossier d'installation sélectionné : {directory}", 0)
+                self.update_status(f"Dossier d'installation sélectionné : {directory}", 0, '#4FC3F7')
         except Exception as e:
             error_msg = f"Erreur lors de la sélection du dossier : {e}"
             print(error_msg)
             messagebox.showerror("Erreur", error_msg)
     
-    def update_status(self, message, progress=None):
+    def update_status(self, message, progress=None, color=None):
         if hasattr(self, 'status_var'):
             self.status_var.set(message)
-            
+
+            # Appliquer la couleur si spécifiée
+            if color and hasattr(self, 'status_label'):
+                self.status_label.config(foreground=color)
+
         if progress is not None and hasattr(self, 'progress'):
             # Mettre à jour la valeur de la barre de progression
             current_value = self.progress['value']
