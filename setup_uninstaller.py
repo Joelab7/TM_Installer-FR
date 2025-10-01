@@ -186,6 +186,10 @@ class UninstallerApp:
         style.configure('TNotebook', background='#FFFFFF')
         style.configure('TNotebook.Tab', background='#FFFFFF')
 
+        # Style personnalisé pour les LabelFrames avec fond blanc
+        style.configure('White.TLabelframe', background='#FFFFFF', foreground='#000000')
+        style.configure('White.TLabelframe.Label', background='#FFFFFF', foreground='#000000')
+
         # Forcer le fond de la fenêtre principale
         self.root.configure(bg='#FFFFFF')
 
@@ -221,9 +225,15 @@ class UninstallerApp:
         info_frame = ttk.LabelFrame(main_frame, text="Composants à désinstaller", padding=10)
         info_frame.pack(fill=tk.X, pady=10, padx=5)
         
+        # Forcer le fond blanc pour le LabelFrame
+        info_frame.configure(style='White.TLabelframe')
+        
         # Frame pour les dossiers d'installation avec une bordure et un fond
         self.dirs_frame = ttk.LabelFrame(info_frame, text="Dossiers d'installation détectés", padding=10)
         self.dirs_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        # Forcer le fond blanc pour ce LabelFrame aussi
+        self.dirs_frame.configure(style='White.TLabelframe')
         
         # Label pour indiquer la détection en cours
         self.dirs_label = ttk.Label(
