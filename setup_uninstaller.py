@@ -201,12 +201,13 @@ class UninstallerApp:
         # Barre de progression
         style.configure("Custom.Horizontal.TProgressbar",
             thickness=20,
-            troughcolor='#FFFFFF',  # Fond blanc pur
-            background='#4FC3F7',
+            troughcolor='#f0f0f0',
+            background='#4FC3F7',  # Couleur bleu
             troughrelief='flat',
-            borderwidth=0,  # Pas de bordure
+            borderwidth=1,
             lightcolor='#66BB6A',
-            darkcolor='#388E3C'
+            darkcolor='#388E3C',
+            bordercolor='#E0E0E0'
         )
         
         # Frame principal
