@@ -81,7 +81,8 @@ class InstallerApp:
         ttk.Checkbutton(
             options_frame, 
             text="Créer un raccourci au bureau(recommandé)",
-            variable=self.create_desktop_shortcut
+            variable=self.create_desktop_shortcut,
+            style='Blue.TCheckbutton'
         ).pack(anchor='w', pady=2)
         
         # Espacement
@@ -144,8 +145,25 @@ class InstallerApp:
         ).pack(side=tk.RIGHT)
         self.status_label.pack(pady=(5, 0))
         
-        # Style pour le bouton d'installation
-        self.style.configure('Accent.TButton', font=('Segoe UI', 10, 'bold'), background='#4FC3F7', foreground='#FFFFFF')
+        # Style pour les checkbuttons avec couleur bleue claire quand sélectionné
+        self.style.configure('Blue.TCheckbutton',
+                           font=('Segoe UI', 10),
+                           foreground='#000000',  # Texte noir
+                           background='#FFFFFF')
+
+        self.style.map('Blue.TCheckbutton',
+                      background=[('active', '#E3F2FD'),  # Fond très clair au survol
+                                 ('selected', '#4FC3F7')], # Bleu clair quand sélectionné
+                      indicatorcolor=[('selected', '#4FC3F7')])  # Couleur de la case elle-même
+
+        # Configuration pour le bouton de base aussi
+        self.style.configure('TButton',
+                           font=('Segoe UI', 10),
+                           background='#1976D2',  # Bleu moderne
+                           foreground='white')
+        self.style.map('TButton',
+                      background=[('active', '#42A5F5'),  # Bleu au survol
+                                 ('pressed', '#1E88E5')])  # Bleu plus foncé quand pressé
     
     def browse_directory(self):
         """Ouvre une boîte de dialogue pour sélectionner le dossier d'installation."""
