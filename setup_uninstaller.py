@@ -167,7 +167,7 @@ class UninstallerApp:
     def setup_ui(self):
         # Style
         style = ttk.Style()
-        style.theme_use('clam')
+        style.theme_use('default')
 
         # Configuration complète pour fond blanc - tous les éléments
         style.configure('TFrame', background='#FFFFFF')
@@ -204,10 +204,9 @@ class UninstallerApp:
             troughcolor='#f0f0f0',
             background='#4FC3F7',  # Couleur bleu
             troughrelief='flat',
-            borderwidth=1,
+            borderwidth=0,  # Supprimer les bordures pour un look moderne
             lightcolor='#66BB6A',
-            darkcolor='#388E3C',
-            bordercolor='#E0E0E0'
+            darkcolor='#388E3C'
         )
         
         # Frame principal
@@ -316,13 +315,22 @@ class UninstallerApp:
                                  ('pressed', '#0D47A1')], # Bleu foncé quand pressé
                       relief=[('pressed', 'sunken'), ('!pressed', 'raised')])
 
+        # Supprimer les bordures de focus pour éviter les pointillés noirs
+        style.configure('Accent.TButton', focuscolor='none')
+        style.map('Accent.TButton', bordercolor=[('focus', '#1976D2'), ('!focus', '#1976D2')])
+
         style.configure('TButton',
                            font=('Segoe UI', 10),
                            background='#1976D2',  # Bleu moderne
                            foreground='white')
+
         style.map('TButton',
                       background=[('active', '#42A5F5'),  # Bleu au survol
                                  ('pressed', '#1E88E5')])  # Bleu plus foncé quand pressé
+
+        # Supprimer les bordures de focus pour éviter les pointillés noirs
+        style.configure('TButton', focuscolor='none')
+        style.map('TButton', bordercolor=[('focus', '#1976D2'), ('!focus', '#1976D2')])
     
     def detect_components(self):
         """Détecte les composants à désinstaller"""
