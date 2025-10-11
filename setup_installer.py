@@ -275,16 +275,36 @@ class InstallerApp:
                     return path
             return user_profile  # Dernier recours
             
-    def _create_batch_file(self, target_dir, name):
-        """Crée un fichier batch pour lancer l'application en arrière-plan."""
-        batch_content = f"""@echo off
-start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
-"""
-        batch_path = os.path.join(target_dir, f"{name}.bat")
-        with open(batch_path, 'w', encoding='utf-8') as f:
-            f.write(batch_content)
-        return batch_path
-
+    def _get_start_menu_path(self):
+        """Récupère le chemin du menu Démarrer en fonction de la langue du système."""
+        try:
+            import ctypes
+            from ctypes import wintypes, windll
+            
+            # Utiliser SHGetFolderPath pour obtenir le vrai chemin du menu Démarrer
+            CSIDL_PROGRAMS = 2  # Menu Démarrer (Tous les utilisateurs)
+            SHGFP_TYPE_CURRENT = 0  # Récupérer le chemin actuel, pas la valeur par défaut
+            
+            buf = ctypes.create_unicode_buffer(wintypes.MAX_PATH)
+            windll.shell32.SHGetFolderPathW(None, CSIDL_PROGRAMS, None, SHGFP_TYPE_CURRENT, buf)
+            
+            start_menu_path = buf.value
+            print(f"[DEBUG] Chemin du menu Démarrer détecté: {start_menu_path}")
+            return start_menu_path
+            
+        except Exception as e:
+            print(f"[ERREUR] Impossible de détecter le chemin du menu Démarrer: {e}")
+            # Fallback sur les chemins standards
+            all_users_profile = os.environ.get('ALLUSERSPROFILE', '')
+            for path in [
+                os.path.join(all_users_profile, r'Microsoft\Windows\Start Menu\Programs'),
+                os.path.join(os.environ.get('PROGRAMDATA', ''), r'Microsoft\Windows\Start Menu\Programs')
+            ]:
+                if os.path.isdir(path):
+                    print(f"[DEBUG] Utilisation du chemin de secours: {path}")
+                    return path
+            return os.path.join(all_users_profile, r'Microsoft\Windows\Start Menu\Programs')  # Dernier recours
+            
     def create_shortcut(self, target, name, directory):
         """Crée un raccourci Windows qui demande l'élévation des privilèges."""
         try:
@@ -293,10 +313,6 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
             import ctypes
             import sys
             import os
-            
-            # Créer le fichier batch
-            target_dir = os.path.dirname(target)
-            batch_path = self._create_batch_file(target_dir, name)
             
             # Créer le chemin complet du raccourci
             shortcut_path = os.path.join(directory, f"{name}.lnk")
@@ -309,7 +325,8 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                 shell = Dispatch('WScript.Shell')
                 shortcut = shell.CreateShortCut(shortcut_path)
                 
-                # Configurer le raccourci pour exécuter avec pythonw.exe (sans console)
+                # Obtenir les chemins nécessaires
+                target_dir = os.path.dirname(target)
                 setup_src_path = os.path.join(target_dir, "setup", "src")
                 pythonw_exe = os.path.join(os.path.dirname(sys.executable), 'pythonw.exe')
                 
@@ -317,7 +334,7 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                 if not os.path.exists(pythonw_exe):
                     pythonw_exe = sys.executable
                     
-                # Configurer le raccourci
+                # Configurer le raccourci pour exécuter directement pythonw.exe avec les arguments
                 shortcut.TargetPath = pythonw_exe
                 shortcut.Arguments = f'"{os.path.join(setup_src_path, "main.py")}"'
                 shortcut.WorkingDirectory = setup_src_path
@@ -382,12 +399,6 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                     
                 except Exception as e:
                     print(f"[ATTENTION] Impossible de forcer l'élévation: {e}")
-                
-                # Cacher le fichier batch
-                try:
-                    ctypes.windll.kernel32.SetFileAttributesW(batch_path, 0x02)  # FILE_ATTRIBUTE_HIDDEN
-                except:
-                    pass
                 
                 return True
                 
@@ -744,7 +755,31 @@ start "" /B "{sys.executable}" "{os.path.join(target_dir, 'launch.py')}" %*
                                     print(error_msg)
                                     success_msg += "\n- Impossible de créer le raccourci sur le bureau"
                             
-                            # Le raccourci du menu Démarrer a été supprimé de cette version
+                            # Créer automatiquement un raccourci dans le menu Démarrer (toujours activé)
+                            try:
+                                # Obtenir le chemin du menu Démarrer
+                                start_menu_path = self._get_start_menu_path()
+                                os.makedirs(start_menu_path, exist_ok=True)
+                                print(f"[DEBUG] Utilisation du menu Démarrer: {start_menu_path}")
+                                
+                                # Créer le raccourci dans le menu Démarrer
+                                start_menu_shortcut_created = self.create_shortcut(
+                                    os.path.join(install_dir, 'launch.py'),
+                                    'Telegram Manager',
+                                    start_menu_path
+                                )
+                                
+                                if start_menu_shortcut_created:
+                                    print("[DEBUG] Le raccourci a été créé dans le menu Démarrer")
+                                    success_msg += "\n- Le raccourci a été créé dans le menu Démarrer"
+                                else:
+                                    print("[WARNING] Impossible de créer le raccourci dans le menu Démarrer")
+                                    success_msg += "\n- Impossible de créer le raccourci dans le menu Démarrer"
+                                    
+                            except Exception as e:
+                                error_msg = f"[WARNING] Erreur lors de la création du raccourci Start Menu: {e}"
+                                print(error_msg)
+                                success_msg += "\n- Impossible de créer le raccourci dans le menu Démarrer"
                             
                             # Lancer l'application en arrière-plan
                             setup_src_path = os.path.join(install_dir, 'setup', 'src')
