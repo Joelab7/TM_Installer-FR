@@ -843,7 +843,7 @@ def is_admin():
 
 def main():
     # Créer un fichier de log pour le débogage
-    log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'installer.log')
+    log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Log_file.log')
     with open(log_file, 'w', encoding='utf-8') as f:
         f.write("=== Démarrage de l'installation ===\n")
     
@@ -926,7 +926,18 @@ def main():
             icon_path = os.path.join(script_dir, 'app_icon.ico')
             if os.path.exists(icon_path):
                 try:
+                    # Méthode principale
                     root.iconbitmap(icon_path)
+                    root.wm_iconbitmap(icon_path)
+
+                    # Méthode alternative avec ctypes pour forcer l'icône
+                    try:
+                        import ctypes
+                        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("TelegramManager.Installer")
+                        root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file=icon_path))
+                    except Exception as e:
+                        log(f"Méthode alternative échouée: {e}")
+
                     log(f"Icône chargée avec succès: {icon_path}")
                 except Exception as e:
                     log(f"Impossible de charger l'icône: {e}")

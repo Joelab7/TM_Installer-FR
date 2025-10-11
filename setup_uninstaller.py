@@ -709,7 +709,17 @@ def main():
     icon_path = os.path.join(script_dir, 'app_icon.ico')
     if os.path.exists(icon_path):
         try:
+            # Méthode principale
             root.iconbitmap(icon_path)
+            root.wm_iconbitmap(icon_path)
+
+            # Méthode alternative avec ctypes pour forcer l'icône
+            try:
+                import ctypes
+                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("TelegramManager.Uninstaller")
+                root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file=icon_path))
+            except Exception as e:
+                pass  # Ignorer les erreurs d'icône
         except Exception as e:
             pass  # Ignorer les erreurs d'icône
     
