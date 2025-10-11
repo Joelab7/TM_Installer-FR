@@ -703,6 +703,16 @@ def main():
     
     # Lancer l'interface graphique
     root = tk.Tk()
+    
+    # Définir l'icône de l'application
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    icon_path = os.path.join(script_dir, 'app_icon.ico')
+    if os.path.exists(icon_path):
+        try:
+            root.iconbitmap(icon_path)
+        except Exception as e:
+            pass  # Ignorer les erreurs d'icône
+    
     app = UninstallerApp(root)
     root.mainloop()
 

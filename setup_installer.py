@@ -921,6 +921,18 @@ def main():
         try:
             log("Création de l'interface utilisateur...")
             root = tk.Tk()
+            # Définir l'icône de l'application
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            icon_path = os.path.join(script_dir, 'app_icon.ico')
+            if os.path.exists(icon_path):
+                try:
+                    root.iconbitmap(icon_path)
+                    log(f"Icône chargée avec succès: {icon_path}")
+                except Exception as e:
+                    log(f"Impossible de charger l'icône: {e}")
+            else:
+                log(f"Fichier d'icône introuvable: {icon_path}")
+            
             app = InstallerApp(root)
             log("Démarrage de la boucle principale...")
             root.mainloop()
