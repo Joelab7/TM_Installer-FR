@@ -106,8 +106,8 @@ def get_desktop_shortcut():
     possible_names = [
         'Telegram Manager',
         'Telegram Manager.lnk',
-        'Telegram Manager(French version)',
-        'Telegram Manager(French version).lnk',
+        'TM',
+        'TM.lnk',
     ]
     
     # Emplacements possibles du bureau
@@ -146,6 +146,53 @@ def get_desktop_shortcut():
     print("[DEBUG] Aucun raccourci correspondant n'a été trouvé dans les dossiers de bureau")
     return None
 
+def get_start_menu_shortcut():
+    """Trouve le raccourci dans le menu Démarrer"""
+    print("\n[DEBUG] Recherche du raccourci dans le menu Démarrer...")
+
+    # Noms possibles du raccourci (avec et sans extension .lnk)
+    possible_names = [
+        'Telegram Manager',
+        'Telegram Manager.lnk',
+        'TM',
+        'TM.lnk',
+    ]
+
+    # Emplacements possibles du menu Démarrer
+    start_menu_paths = [
+        os.path.join(os.environ.get('ALLUSERSPROFILE', ''), r'Microsoft\Windows\Start Menu\Programs'),
+        os.path.join(os.environ.get('PROGRAMDATA', ''), r'Microsoft\Windows\Start Menu\Programs'),
+        os.path.join(os.environ.get('USERPROFILE', ''), r'AppData\Roaming\Microsoft\Windows\Start Menu\Programs'),
+    ]
+
+    print("[DEBUG] Emplacements du menu Démarrer à vérifier :")
+    for path in start_menu_paths:
+        print(f"  - {path}")
+
+        # Vérifier si le chemin existe
+        if not os.path.exists(path):
+            print(f"    [DEBUG] Le dossier n'existe pas: {path}")
+            continue
+
+        # Lister tous les fichiers dans le dossier
+        try:
+            files = os.listdir(path)
+            print(f"    [DEBUG] Fichiers trouvés dans {path}:")
+            for f in files:
+                print(f"      - {f}")
+
+                # Vérifier si le fichier correspond à un des noms recherchés
+                for name in possible_names:
+                    if f.lower() == name.lower() or f.lower() == name.lower() + '.lnk':
+                        full_path = os.path.join(path, f)
+                        print(f"    [DEBUG] Correspondance trouvée: {full_path}")
+                        return full_path
+        except Exception as e:
+            print(f"    [ERREUR] Impossible de lister les fichiers dans {path}: {e}")
+
+    print("[DEBUG] Aucun raccourci correspondant n'a été trouvé dans les dossiers du menu Démarrer")
+    return None
+
 class UninstallerApp:
     def __init__(self, root):
         self.root = root
@@ -156,6 +203,7 @@ class UninstallerApp:
         # Variables
         self.install_dirs = []  # Liste de tous les dossiers d'installation
         self.desktop_shortcut = ""
+        self.start_menu_shortcut = ""
         self.uninstall_complete = False
         
         # Style
@@ -262,6 +310,17 @@ class UninstallerApp:
         )
         self.shortcut_label.pack(anchor='w', pady=2)
         
+        # Section pour le raccourci du menu Démarrer
+        self.start_menu_frame = ttk.Frame(info_frame)
+        self.start_menu_frame.pack(fill=tk.X, pady=(5, 0))
+        
+        self.start_menu_label = ttk.Label(
+            self.start_menu_frame, 
+            text="Raccourci menu Démarrer : Non détecté",
+            style='Status.TLabel'
+        )
+        self.start_menu_label.pack(anchor='w', pady=2)
+        
         # Barre de progression
         progress_frame = ttk.Frame(main_frame)
         progress_frame.pack(fill=tk.X, pady=(20, 10))
@@ -357,8 +416,23 @@ class UninstallerApp:
                 foreground='#4FC3F7'  # Bleu au lieu d'orange
             )
         
+        # Détecter le raccourci du menu Démarrer
+        self.start_menu_shortcut = get_start_menu_shortcut()
+        if self.start_menu_shortcut:
+            print(f"[DEBUG] Raccourci menu Démarrer détecté: {self.start_menu_shortcut}")
+            self.start_menu_label.config(
+                text=f"Raccourci menu Démarrer : {os.path.basename(self.start_menu_shortcut)}",
+                foreground='#4FC3F7'  # Bleu au lieu de vert/rouge
+            )
+        else:
+            print("[DEBUG] Aucun raccourci trouvé dans le menu Démarrer")
+            self.start_menu_label.config(
+                text="Raccourci menu Démarrer : Non détecté (peut déjà être supprimé)",
+                foreground='#4FC3F7'  # Bleu au lieu d'orange
+            )
+        
         # Mettre à jour l'état du bouton de désinstallation
-        if not self.install_dirs and not self.desktop_shortcut:
+        if not self.install_dirs and not self.desktop_shortcut and not self.start_menu_shortcut:
             self.uninstall_btn.config(state=tk.DISABLED)
             self.status_var.set(
                 "Aucun composant de Telegram Manager n'a été trouvé sur ce système. "
@@ -450,13 +524,21 @@ class UninstallerApp:
                 except Exception as e:
                     self.update_status(f"Avertissement: Impossible de supprimer le raccourci: {e}")
             
+            # Étape 1.5: Supprimer le raccourci du menu Démarrer
+            if self.start_menu_shortcut and os.path.exists(self.start_menu_shortcut):
+                self.update_status("Suppression du raccourci du menu Démarrer...", 15)
+                try:
+                    os.remove(self.start_menu_shortcut)
+                except Exception as e:
+                    self.update_status(f"Avertissement: Impossible de supprimer le raccourci du menu Démarrer: {e}")
+            
             # Étape 2: Supprimer les répertoires d'installation sélectionnés
             selected_dirs = self.get_selected_dirs()
             total_dirs = len(selected_dirs)
             
             if total_dirs > 0:
                 for i, install_dir in enumerate(selected_dirs, 1):
-                    progress = 10 + int((i / (total_dirs + 1)) * 80)  # 10-90% pour la suppression des dossiers
+                    progress = 20 + int((i / (total_dirs + 1)) * 75)  # 20-95% pour la suppression des dossiers
                     self.update_status(f"Suppression du dossier d'installation ({i}/{total_dirs}): {install_dir}", progress)
                     
                     if not os.path.exists(install_dir):
