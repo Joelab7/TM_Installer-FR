@@ -39,47 +39,33 @@ if %ERRORLEVEL% NEQ 0 (
         set PYTHON_CMD=py
         %PYTHON_CMD% --version >nul 2>&1
         if %ERRORLEVEL% NEQ 0 (
-            where winget >nul 2>&1
-            if %ERRORLEVEL% EQU 0 (
-                where curl >nul 2>&1
-                if %ERRORLEVEL% NEQ 0 (
-                    winget install -e --id cURL.cURL >nul 2>&1
-                    if %ERRORLEVEL% NEQ 0 (
-                        exit /b 1
-                    )
-                )
-                
-                curl -o python_installer.exe https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe >nul 2>&1
-                if %ERRORLEVEL% NEQ 0 (
-                    exit /b 1
-                )
-                
-                python_installer.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=0 >nul 2>&1
-                del python_installer.exe >nul 2>&1
-                
-                if %ERRORLEVEL% EQU 0 (
-                    set "PYTHON_PATH=%LOCALAPPDATA%\Programs\Python\Python311"
-                    setx PATH "%PATH%;%PYTHON_PATH%;%PYTHON_PATH%\Scripts" >nul 2>&1
-                    set "PATH=%PATH%;%PYTHON_PATH%;%PYTHON_PATH%\Scripts"
-                    
-                    set PYTHON_CMD=python
-                    %PYTHON_CMD% --version >nul 2>&1
-                    if %ERRORLEVEL% NEQ 0 (
-                        exit /b 1
-                    )
-                ) else (
-                    exit /b 1
-                )
-            ) else (
-                exit /b 1
-            )
+            :: Python 3.11.9 n'est pas installé, ouvrir le lien de téléchargement
+            echo Python 3.11.9 n'est pas trouve.
+            echo Ouverture du lien de telechargement dans votre navigateur...
+            start "" "https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe"
+            echo.
+            echo Veuillez telecharger et installer Python 3.11.9, puis relancer ce script.
+            echo.
+            pause
+            exit /b 1
         )
     )
 )
 
-:: Vérification de la version de Python
-%PYTHON_CMD% -c "import sys; exit(0 if sys.version_info >= (3, 8) else 1)" >nul 2>&1
+:: Vérification spécifique de Python 3.11.9
+%PYTHON_CMD% -c "import sys; exit(0 if (sys.version_info.major, sys.version_info.minor, sys.version_info.micro) == (3, 11, 9) else 1)" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo Version de Python incorrecte. Ce script requiert Python 3.11.9 exactement.
+    echo Version actuelle:
+    %PYTHON_CMD% --version
+    echo.
+    echo Ouverture du lien de telechargement pour Python 3.11.9...
+    start "" "https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe"
+    echo.
+    echo Veuillez installer Python 3.11.9, puis relancer ce script.
+    echo.
+    pause
     exit /b 1
 )
 
@@ -89,21 +75,14 @@ if %ERRORLEVEL% NEQ 0 (
     %PYTHON_CMD% -m pip install pywin32 >nul 2>&1
 )
 
-:: Vérifier si Git est installé
-git --version >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    where winget >nul 2>&1
-    if %ERRORLEVEL% EQU 0 (
-        winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements >nul 2>&1
-        
-        if %ERRORLEVEL% EQU 0 (
-            setx PATH "%PATH%;C:\\Program Files\\Git\\cmd" >nul 2>&1
-            set "PATH=%PATH%;C:\\Program Files\\Git\\cmd"
-        )
-    )
-)
 
-:: Lancer l'installateur complètement en arrière-plan
-start /B "" %PYTHON_CMD% "%SCRIPT_DIR%\setup_installer.py" >nul 2>&1
+:: Lancer l'installateur
+echo Lancement de l'installateur...
+%PYTHON_CMD% "%SCRIPT_DIR%\setup_installer.py"
+if %ERRORLEVEL% NEQ 0 (
+    echo Erreur lors de l'execution de setup_installer.py
+    pause
+    exit /b 1
+)
 
 exit
